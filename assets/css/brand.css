@@ -1,0 +1,57 @@
+/* WeBuyRolls (CMI Inc.) — brand tokens from the new logo suite (Sept 2026)
+   Group palette: navy #081a34 + blue #1658a7. Accent: #9aa4b2
+   Token names kept generic (--green-*) for kit compatibility. */
+:root {
+  --green-900:#081a34; --green-800:#0b2a55; --green-700:#0f4587; --green-600:#1658a7;
+  --green-500:#3b78c4; --green-100:#e3ecf7; --green-50:#f2f6fb;
+  --accent:#9aa4b2;
+  --scrim-a: rgba(8,26,52,.94); --scrim-b: rgba(10,38,80,.86); --scrim-c: rgba(22,88,167,.55);
+  --pscrim-a: rgba(8,26,52,.93); --pscrim-b: rgba(15,69,135,.78);
+}
+/* 7 nav items: tighten before the 900px collapse */
+@media (min-width: 901px) and (max-width: 1060px) {
+  .nav__list a { padding: 10px 9px; font-size: .9rem; }
+  .nav__cta { margin-left: 4px; }
+  .nav__cta .btn { padding: 11px 16px; font-size: .88rem; }
+}
+
+/* ---- Motif: the 3D coil — hard solid shadow, concentric roll-lines, arrow tip ---- */
+:root { --extrude: var(--green-900); }
+/* buttons extrude and lift like the coil */
+.btn--primary, .btn--outline, .form-card .btn { box-shadow: 4px 4px 0 var(--extrude); transition: transform .15s ease, box-shadow .15s ease, background .15s ease; }
+.btn--primary:hover, .btn--outline:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--extrude); }
+.btn--primary:active, .btn--outline:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--extrude); }
+.btn--ghost { box-shadow: 4px 4px 0 rgba(255,255,255,.28); }
+.btn--ghost:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 rgba(255,255,255,.4); }
+/* cards: solid navy edge + hard shadow; hover lifts */
+.mcard, .tile, .card, .form-card, .aside-card { border: 2px solid var(--green-900); border-radius: 8px; box-shadow: 6px 6px 0 var(--green-900); transition: transform .18s ease, box-shadow .18s ease; }
+.mcard:hover, .card:hover { transform: translate(-3px,-3px); box-shadow: 10px 10px 0 var(--green-900); border-color: var(--green-900); }
+.stats { border: 2px solid var(--green-900); box-shadow: 6px 6px 0 var(--green-900); border-radius: 8px; }
+/* eyebrow: three thin roll-lines before the label */
+.eyebrow::before { content: ""; display: inline-block; width: 30px; height: 11px; margin-right: 12px; vertical-align: -1px;
+  background: repeating-linear-gradient(to bottom, var(--green-600) 0 2px, transparent 2px 5px); }
+/* hero: concentric rings, like looking into the end of a roll */
+.hero::before { content: ""; position: absolute; right: -14vw; bottom: -30vw; width: 70vw; height: 70vw; z-index: 1; pointer-events: none; border-radius: 50%;
+  background: repeating-radial-gradient(circle at center, transparent 0 26px, rgba(255,255,255,.10) 26px 28px); opacity: .9; }
+.page-hero::before { content: ""; position: absolute; right: -10vw; bottom: -40vw; width: 55vw; height: 55vw; z-index: 1; pointer-events: none; border-radius: 50%;
+  background: repeating-radial-gradient(circle at center, transparent 0 22px, rgba(255,255,255,.09) 22px 24px); }
+/* links: arrow tip slides, like the coil's arrowhead */
+.mcard__lk svg, .card__link svg { stroke-width: 3; }
+.stat__num { text-shadow: 3px 3px 0 var(--green-100); }
+/* nav active: solid block underline */
+.nav__list a[aria-current="page"]::after { height: 3px; border-radius: 0; }
+
+/* Bullets (D): tick on an extruded blue square */
+.list-check li::before { border-radius: 4px; background-color: var(--green-600); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E"); box-shadow: 3px 3px 0 var(--green-900); margin-right: 4px; }
+
+/* Nav hover + active (W2): the three roll-lines stack up, bottom to top */
+.nav__list a::after { content: ""; position: absolute; left: 11px; right: 11px; bottom: 2px; height: 9px; border-radius: 0;
+  background: repeating-linear-gradient(to top, var(--green-600) 0 2px, transparent 2px 5px) left bottom / 100% 0 no-repeat;
+  transition: background-size .3s steps(3, end); }
+.nav__list a:hover::after, .nav__list a[aria-current="page"]::after { background-size: 100% 9px; background-color: transparent; }
+.site-header--overlay:not(.is-stuck) .nav__list a::after,
+.site-header--overlay:not(.is-stuck) .nav__list a[aria-current="page"]::after { background-image: repeating-linear-gradient(to top, #fff 0 2px, transparent 2px 5px); background-color: transparent; }
+.nav__list a:hover { background: none; }
+
+/* active state: explicit geometry (the kit default sets height:2px at higher specificity) */
+.nav__list a[aria-current="page"]::after { left: 11px; right: 11px; bottom: 2px; height: 9px; width: auto; border-radius: 0; }
