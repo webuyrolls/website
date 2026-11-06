@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 176 444">
+  <defs>
+    <mask id="gap"><rect width="176" height="444" fill="#fff"/><ellipse cx="88" cy="378" rx="88" ry="42" fill="#000"/></mask>
+  </defs>
+  <path fill="#868686" mask="url(#gap)" d="M0 44A88 44 0 0 1 176 44V378H0Z"/>
+  <path fill="#868686" fill-rule="evenodd" d="M0 395a88 48 0 1 0 176 0a88 48 0 1 0-176 0ZM52 396a36 22 0 1 0 72 0a36 22 0 1 0-72 0Z"/>
+</svg>
