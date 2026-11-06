@@ -1,0 +1,132 @@
+{
+  "aluminum-foil": [
+    {
+      "q": "What aluminum foil rolls do you buy?",
+      "a": "We buy rolls of bare, lacquered and laminated aluminum foil. That includes uncoated coils, paper and polymer laminates, lid stock, pouch stock, blister and cold form foil, and production scrap. If it's foil on a core, we want to hear about it."
+    },
+    {
+      "q": "Which industries do your foil rolls come from?",
+      "a": "As roll buyers, we work with foil importers, distributors and laminators, flexible packaging converters and slitters, food and beverage packers (heat seal lids, pouches, butter and candy wrap) and pharmaceutical packagers (blister lidding and pouch)."
+    },
+    {
+      "q": "Do you buy damaged, rejected or overrun foil rolls?",
+      "a": "Yes. We buy surplus rolls that are overstock, outdated, rejected or damaged. Tell us what happened to the rolls and we'll tell you what we can offer."
+    },
+    {
+      "q": "Can you destroy printed foil and laminates?",
+      "a": "Yes. If your printed foil or laminate carries a brand or sensitive design, we can guarantee its destruction instead of reselling it."
+    },
+    {
+      "q": "How do I sell my surplus aluminum foil rolls?",
+      "a": "Call or email us with a description or specs, the gross weight on hand and your pick-up location. Photos help. We'll send you a proposal, simple as that."
+    },
+    {
+      "q": "How fast can you pick up?",
+      "a": "We buy rolls in full and partial trailer loads across North America, and can usually have a truck at your warehouse within 48 to 72 hours."
+    }
+  ],
+  "paper": [
+    {
+      "q": "What paper rolls do you buy?",
+      "a": "We buy unprinted rolls of thin gauge paper first and foremost: natural and bleached kraft, white and colored tissue, thermal print paper, wet strength paper and board in white 1S or 2S. We also buy rolls of coated, laminated, poly coated, silicone coated and metallized paper."
+    },
+    {
+      "q": "Which industries do your paper rolls come from?",
+      "a": "We buy rolls from paper mills (stocklot, coated and uncoated), flexible packaging converters, laminators and slitters, food and beverage packers, and PSA tape and label makers with surplus release paper."
+    },
+    {
+      "q": "Do you buy printed or colored paper rolls?",
+      "a": "Colored paper is fine. Our main interest is unprinted paper, but we also look at printed rollstock, so send us the details."
+    },
+    {
+      "q": "Do you buy coated paper?",
+      "a": "Yes. Paper coated or laminated one or two sides is in demand. Just ask, and tell us the coating and basis weight if you know them."
+    },
+    {
+      "q": "How do I sell my surplus paper rolls?",
+      "a": "Send us the grade, width and basis weight if you have them, plus the gross weight on hand, the pick-up location and a few photos. As your roll buyer, we'll come back with a proposal."
+    },
+    {
+      "q": "How fast can you pick up?",
+      "a": "We pick up full and partial trailer loads of surplus rolls across North America, usually within 48 to 72 hours."
+    }
+  ],
+  "nonwoven-fabric": [
+    {
+      "q": "What non-woven fabric rolls do you buy?",
+      "a": "We buy PP, PET, PS and PE non-wovens, including spunbond, spunlace and air laid materials, hydrophobic and hydrophilic fabric, medical garment laminates, wipes, dressings and filter materials."
+    },
+    {
+      "q": "Which industries do your non-woven rolls come from?",
+      "a": "We buy rolls from medical and hygiene manufacturers, filtration makers, wipes converters, automotive suppliers and personal care brands, as well as non-woven fabric mills."
+    },
+    {
+      "q": "Do you take large quantities?",
+      "a": "Yes. Large quantities will not scare us. We'll take full trailer loads of surplus rolls as well as partial loads."
+    },
+    {
+      "q": "What details should I send?",
+      "a": "Non-wovens vary a lot, so the more detail the better: the polymer, the process (spunbond, spunlace or air laid), the basis weight, width, any treatment, the gross weight on hand and your location. Photos help."
+    },
+    {
+      "q": "Why sell surplus rolls instead of throwing them out?",
+      "a": "Selling to a roll buyer recaptures value, clears space for product and cuts your disposal costs. We'll recover what we can."
+    },
+    {
+      "q": "How fast can you pick up?",
+      "a": "We buy rolls across North America and can usually have a truck at your warehouse within 48 to 72 hours."
+    }
+  ],
+  "plastic-film": [
+    {
+      "q": "What plastic film rolls do you buy?",
+      "a": "We're most interested in single resin, unlaminated rolls: PP, BOPP, OPP, PET, LDPE, HDPE, LLDPE, PVC, PS and nylon. We also buy multilayer laminates, coated films, heat shrink and Cryovac, pouch and lidding films, and metallized film."
+    },
+    {
+      "q": "Do you buy metallized, holographic or hot stamping film?",
+      "a": "Yes. We buy vacuum deposit and metallized film, holographic film and hot stamping foil, printed or unprinted, laminated or coated."
+    },
+    {
+      "q": "Which industries do your film rolls come from?",
+      "a": "We buy rolls from flexible packaging converters, laminators and slitters, metallizers, food and beverage packers (lids, pouches and bags), pharmaceutical packagers (blister lidding and pouch), and health and beauty brands using high-barrier and shrink films."
+    },
+    {
+      "q": "Do you buy laminated or printed film?",
+      "a": "Yes. Single resin film is our main interest, but we also buy surplus rolls of many laminate films, printed and unprinted. Send us the structure and we'll let you know."
+    },
+    {
+      "q": "How do I sell my surplus film rolls?",
+      "a": "Tell us the resin or structure, gauge and width if you know them, the gross weight on hand and your pick-up location. Add photos, and as your roll buyer we'll send you a proposal."
+    },
+    {
+      "q": "How fast can you pick up?",
+      "a": "We buy rolls in full and partial trailer loads across North America, usually with a truck at your warehouse within 48 to 72 hours."
+    }
+  ],
+  "psa-materials": [
+    {
+      "q": "What PSA rolls do you buy?",
+      "a": "We buy pressure sensitive adhesive (PSA) backed rolls: label stock in slit and master rolls, BOPP, PE and PET plastic tape, double sided tape, medical tape, heat shrink tape, paper tape, metallized film labels, overlaminates and silicone release liner."
+    },
+    {
+      "q": "Do you buy self wound and supported rolls?",
+      "a": "Yes, both. We also buy carrier and facestock webs, and many PSA-backed metals and fabrics."
+    },
+    {
+      "q": "Which industries do your PSA rolls come from?",
+      "a": "We buy rolls from tape and label converters, release liner and facestock makers, flexible packaging converters and slitters, and medical and pharmaceutical suppliers."
+    },
+    {
+      "q": "Do you buy surplus release liner on its own?",
+      "a": "Yes. Silicone release liner, paper or film, is one of the materials we buy most often."
+    },
+    {
+      "q": "How do I sell my surplus tape and label rolls?",
+      "a": "Send us the product type, adhesive and liner if you know them, the gross weight on hand, your location and a few photos. As your roll buyer, we'll get back to you with a proposal."
+    },
+    {
+      "q": "How fast can you pick up?",
+      "a": "We pick up full and partial trailer loads of surplus rolls across North America, usually within 48 to 72 hours."
+    }
+  ]
+}

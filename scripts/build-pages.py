@@ -3,11 +3,13 @@
 
 Each page reuses the homepage's <head>, header, contact section and footer,
 and copies its material panel (heading, copy, tags and photo) exactly.
-Below that it adds the material's photo gallery from assets/img/gallery/.
+Below that it adds the material's photo gallery from assets/img/gallery/
+and its FAQ (with FAQPage structured data) from scripts/faqs.json.
 
 Edit index.html, then run:  python3 scripts/build-pages.py
 """
 import html
+import json
 import re
 from pathlib import Path
 
@@ -43,6 +45,44 @@ PAGES = {
 }
 
 
+# How each material reads mid-sentence, for the FAQ heading
+FAQ_NAMES = {
+    "aluminum-foil": "aluminum foil",
+    "paper": "paper",
+    "nonwoven-fabric": "non-woven fabric",
+    "plastic-film": "plastic film",
+    "psa-materials": "PSA tape and label",
+}
+
+
+def faq_block(slug, faqs):
+    """Return (section html, JSON-LD script) for a page's FAQ, from scripts/faqs.json."""
+    items = "\n".join(
+        """        <details class="faq__item reveal">
+          <summary><span class="faq__q">{q}</span><span class="faq__x" aria-hidden="true"></span></summary>
+          <p class="faq__a">{a}</p>
+        </details>""".format(q=html.escape(f["q"]), a=html.escape(f["a"])) for f in faqs)
+    section = """  <section class="faq" aria-labelledby="faq-h">
+    <div class="wrap faq__in">
+      <header class="faq__head">
+        <p class="tag reveal">FAQ</p>
+        <h2 class="split" id="faq-h">Selling surplus {name} rolls</h2>
+      </header>
+      <div class="faq__list">
+{items}
+      </div>
+    </div>
+  </section>""".format(name=FAQ_NAMES[slug], items=items)
+    schema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [{"@type": "Question", "name": f["q"],
+                        "acceptedAnswer": {"@type": "Answer", "text": f["a"]}} for f in faqs],
+    }
+    script = '<script type="application/ld+json">%s</script>\n' % json.dumps(schema, ensure_ascii=False).replace("</", "<\\/")
+    return section, script
+
+
 def grab(src, pattern):
     m = re.search(pattern, src, re.S)
     if not m:
@@ -61,6 +101,8 @@ def main():
     header = header.replace('href="#hero"', 'href="/"')
     header = re.sub(r'href="#(handle|why)"', r'href="/#\1"', header)
     footer = footer.replace('href="#hero"', 'href="#top"')
+
+    faqs = json.loads((ROOT / "scripts" / "faqs.json").read_text())
 
     panels = re.findall(r'<details class="acc__item[^"]*"[^>]*>.*?</details>', src, re.S)
     found = 0
@@ -83,6 +125,8 @@ def main():
         for prop in ("og:description", "twitter:description"):
             page_head = re.sub(r'(<meta (?:property|name)="%s" content=")[^"]*' % prop, r"\g<1>" + html.escape(desc, quote=True), page_head)
         page_head = re.sub(r'(<meta property="og:url" content=")[^"]*', r"\g<1>%s/%s" % (SITE, slug), page_head)
+        faq, faq_schema = faq_block(slug, faqs[slug])
+        page_head = page_head.replace("</head>", faq_schema + "</head>")
 
         gallery = "\n".join(
             '        <figure class="gallery__item frame reveal"><img src="assets/img/gallery/%s-%d.jpg" alt="%s" width="1200" height="900" loading="lazy"></figure>'
@@ -117,6 +161,8 @@ def main():
     </div>
   </section>
 
+{faq}
+
 {contact}
 
 </main>
@@ -128,7 +174,7 @@ def main():
 </html>
 """.format(head=page_head, header=header, photo=photo.group(1), pw=photo.group(2), ph=photo.group(3),
            title=title, copy=copy, chips=chips.replace('<ul class="chips">', '<ul class="chips mat-chips reveal">'),
-           name=html.escape(name, quote=True), gallery=gallery, contact=contact, footer=footer)
+           name=html.escape(name, quote=True), gallery=gallery, faq=faq, contact=contact, footer=footer)
         (ROOT / (slug + ".html")).write_text(page)
         found += 1
         print("wrote", slug + ".html")
