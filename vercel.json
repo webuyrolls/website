@@ -2,6 +2,14 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/index", "destination": "/", "permanent": true },
+    { "source": "/aluminum-foil", "destination": "/#aluminum-foil", "permanent": true },
+    { "source": "/plastic-film", "destination": "/#plastic-film", "permanent": true },
+    { "source": "/paper", "destination": "/#paper", "permanent": true },
+    { "source": "/nonwoven-fabric", "destination": "/#nonwoven-fabric", "permanent": true },
+    { "source": "/psa-materials", "destination": "/#psa-materials", "permanent": true }
+  ],
   "headers": [
     { "source": "/assets/img/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] },
     { "source": "/assets/(css|js)/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] }
