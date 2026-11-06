@@ -31,7 +31,7 @@
     }
   });
   var cur = 0;
-  requestAnimationFrame(function () { requestAnimationFrame(function () { words[0].classList.add('is-on'); }); });
+  if (words.length) requestAnimationFrame(function () { requestAnimationFrame(function () { words[0].classList.add('is-on'); }); });
   if (!reduce && words.length > 1) {
     setInterval(function () {
       if (document.hidden) return;
@@ -93,15 +93,18 @@
     counters.forEach(function (c) { c.textContent = '0'; cio.observe(c); });
   }
 
-  /* Scroll-driven: pitch sequence, hero rolls parallax, photo drift */
+  /* Scroll-driven: pitch sequence, hero rolls parallax, photo drift (homepage blocks are optional) */
   var pitch = document.querySelector('.pitch');
-  var steps = [].slice.call(pitch.querySelectorAll('[data-step]'));
-  var bar = pitch.querySelector('.pitch__bar');
+  var steps = pitch ? [].slice.call(pitch.querySelectorAll('[data-step]')) : [];
+  var bar = pitch && pitch.querySelector('.pitch__bar');
   var hero = document.querySelector('.hero');
   var rolls = [].slice.call(document.querySelectorAll('.roll'));
   var bgs = [].slice.call(document.querySelectorAll('.bg img'));
   var links = [].slice.call(nav.querySelectorAll('a'));
-  var targets = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  var targets = links.map(function (a) {
+    var h = a.getAttribute('href');
+    return h.charAt(0) === '#' ? document.querySelector(h) : null;
+  });
   var ticking = false;
 
   function frame() {
@@ -112,15 +115,19 @@
     if (reduce) { steps.forEach(function (s) { s.classList.add('on'); }); return; }
 
     // pitch: 0..1 progress through the tall section
-    var r = pitch.getBoundingClientRect();
-    var p = Math.min(Math.max(-r.top / (r.height - vh), 0), 1);
-    bar.style.setProperty('--p', p.toFixed(3));
-    var active = r.top < vh * .35 ? Math.floor(p * 4.6) + 1 : 0;
-    steps.forEach(function (s) { s.classList.toggle('on', +s.getAttribute('data-step') <= active); });
+    if (pitch) {
+      var r = pitch.getBoundingClientRect();
+      var p = Math.min(Math.max(-r.top / (r.height - vh), 0), 1);
+      bar.style.setProperty('--p', p.toFixed(3));
+      var active = r.top < vh * .35 ? Math.floor(p * 4.6) + 1 : 0;
+      steps.forEach(function (s) { s.classList.toggle('on', +s.getAttribute('data-step') <= active); });
+    }
 
     // hero rolls drift at different speeds
-    var hy = Math.max(0, -hero.getBoundingClientRect().top);
-    rolls.forEach(function (el, i) { el.style.setProperty('--py', (-hy * [0.35, 0.6, 0.85][i]).toFixed(1)); });
+    if (hero) {
+      var hy = Math.max(0, -hero.getBoundingClientRect().top);
+      rolls.forEach(function (el, i) { el.style.setProperty('--py', (-hy * [0.35, 0.6, 0.85][i]).toFixed(1)); });
+    }
 
     // background photos drift slightly slower than the page
     bgs.forEach(function (img) {
@@ -141,7 +148,7 @@
 
   /* HubSpot form: loads only when portal and form IDs are set on #hubspot-form */
   var slot = document.getElementById('hubspot-form');
-  var portal = slot.getAttribute('data-portal-id'), formId = slot.getAttribute('data-form-id');
+  var portal = slot && slot.getAttribute('data-portal-id'), formId = slot && slot.getAttribute('data-form-id');
   if (portal && formId) {
     document.getElementById('fallback-form').hidden = true;
     var s = document.createElement('script');

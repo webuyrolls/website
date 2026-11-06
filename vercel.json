@@ -3,15 +3,30 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/index", "destination": "/", "permanent": true },
-    { "source": "/aluminum-foil", "destination": "/#handle", "permanent": true },
-    { "source": "/plastic-film", "destination": "/#handle", "permanent": true },
-    { "source": "/paper", "destination": "/#handle", "permanent": true },
-    { "source": "/nonwoven-fabric", "destination": "/#handle", "permanent": true },
-    { "source": "/psa-materials", "destination": "/#handle", "permanent": true }
+    {
+      "source": "/index",
+      "destination": "/",
+      "permanent": true
+    }
   ],
   "headers": [
-    { "source": "/assets/img/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] },
-    { "source": "/assets/(css|js)/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] }
+    {
+      "source": "/assets/img/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(css|js)/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
   ]
 }
