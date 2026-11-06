@@ -284,7 +284,13 @@ ul { margin: 0; padding: 0; list-style: none; }
 .foot__row p { margin: 0; max-width: 52ch; color: var(--muted); font-size: .95rem; }
 .foot__row ul { display: grid; gap: 6px; text-align: right; font-family: var(--mono); font-size: .9rem; }
 .foot__base { display: flex; justify-content: space-between; gap: 16px; padding-top: 22px; font: 400 .8rem var(--mono); color: #7d8aa0; }
+.foot__base { flex-wrap: wrap; align-items: center; }
 .foot__base a { color: var(--muted); }
+.foot__base a:hover { color: var(--text); }
+.foot__legal { display: flex; flex-wrap: wrap; gap: 6px 22px; }
+.foot__row p a { color: var(--text); text-decoration: underline; text-decoration-color: var(--blue-lt); text-underline-offset: 3px; }
+.foot__row p a:hover { color: var(--blue-lt); }
+@media (max-width: 760px) { .foot__base { flex-direction: column; align-items: flex-start; } }
 @media (max-width: 760px) { .foot__row { grid-template-columns: 1fr; } .foot__row ul { text-align: left; } }
 
 /* Scroll reveals */
