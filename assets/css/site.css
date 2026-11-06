@@ -209,7 +209,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* 4 · Why */
 .why { position: relative; isolation: isolate; padding: clamp(110px, 15vw, 200px) 0; overflow: hidden; }
 .why h2 { font-size: clamp(2.9rem, 7.4vw, 6.4rem); }
-.why__lede { max-width: 18ch; font-size: clamp(1.9rem, 4.2vw, 3.6rem); line-height: 1.08; letter-spacing: -.035em; color: var(--muted); margin-bottom: clamp(48px, 7vw, 88px); }
+.why__lede { max-width: none; font-size: clamp(1.9rem, 4.2vw, 3.6rem); line-height: 1.08; letter-spacing: -.035em; color: var(--muted); margin-bottom: clamp(48px, 7vw, 88px); }
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 0 0 clamp(56px, 8vw, 96px); }
 .stats > div { padding: 30px 24px 26px; }
 .stats dt { font-size: clamp(2.4rem, 4.6vw, 4.2rem); line-height: 1; letter-spacing: -.05em; }
@@ -217,7 +217,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 .why__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px clamp(32px, 6vw, 96px); max-width: 1040px; }
 .why__cols p { margin: 0; color: var(--muted); font-size: 1.08rem; }
 .why__cols p:first-child { color: var(--text); }
+/* each sentence on its own line, stepped in */
+.why__line { display: block; }
+.why__line:nth-child(2) { padding-left: 1.5em; }
+.why__line:nth-child(3) { padding-left: 3em; }
 @media (max-width: 900px) { .stats { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .why__line:nth-child(2) { padding-left: .9em; } .why__line:nth-child(3) { padding-left: 1.8em; } }
 @media (max-width: 680px) { .why__cols { grid-template-columns: 1fr; } }
 
 /* 5 · From / to */

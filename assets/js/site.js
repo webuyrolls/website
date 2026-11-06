@@ -46,11 +46,16 @@
 
   /* Headings that reveal word by word */
   [].slice.call(document.querySelectorAll('.split')).forEach(function (el) {
-    var parts = el.textContent.trim().split(/\s+/);
-    el.setAttribute('aria-label', el.textContent.trim());
+    var text = el.textContent.trim();
+    var parts = text.split(/\s+/);
+    // animated words are hidden from screen readers; a visually hidden copy carries the text
+    var sr = document.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = text;
     el.innerHTML = parts.map(function (p, i) {
       return '<span class="w" aria-hidden="true"><span style="--i:' + i + '">' + p + '</span></span>';
     }).join(' ');
+    el.appendChild(sr);
   });
 
   /* Scroll reveals; siblings in the same parent stagger */
