@@ -180,6 +180,15 @@ ul { margin: 0; padding: 0; list-style: none; }
 .acc__item[open] .chips li:nth-child(3) { animation-delay: .12s; }
 .acc__item[open] .chips li:nth-child(4) { animation-delay: .18s; }
 @keyframes chip { from { opacity: 0; transform: translateY(14px); } }
+.acc__copy { max-width: 60ch; margin: -4px 0 22px; padding: 0 clamp(18px, 3vw, 34px); color: #d6e2f2; font-size: 1.05rem; }
+.acc__item[open] .acc__copy { animation: chip .55s var(--ease) both; }
+.acc__item[open] .chips li:nth-child(n+5) { animation-delay: .24s; }
+/* Photo behind a panel, shown only while it's open */
+.acc__media { position: absolute; inset: 0; z-index: -2; overflow: hidden; opacity: 0; transition: opacity .7s var(--ease); pointer-events: none; }
+.acc__media img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; transform: scale(1.08); transition: transform 1.6s var(--ease); }
+.acc__item--media[open] .acc__media { opacity: 1; }
+.acc__item--media[open] .acc__media img { transform: none; }
+.acc__item--media[open]::before { background: linear-gradient(90deg, rgba(12,28,51,.95) 0%, rgba(14,44,86,.86) 50%, rgba(25,91,166,.45) 100%); }
 @supports (interpolate-size: allow-keywords) {
   .acc { interpolate-size: allow-keywords; }
   .acc__item::details-content { height: 0; overflow: clip; transition: height .5s var(--ease), content-visibility .5s allow-discrete; }
@@ -187,6 +196,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 @media (max-width: 600px) {
   .acc summary { grid-template-columns: 1fr 44px; }
+  .chips { gap: 8px; }
+  .chips li { padding: 8px 12px; font-size: .88rem; }
   .acc__item:hover .acc__t { transform: none; }
 }
 .more { display: flex; align-items: center; flex-wrap: wrap; gap: 18px 28px; margin: clamp(40px, 6vw, 64px) 0 0; }
