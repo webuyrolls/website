@@ -14,7 +14,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SITE = "https://webuyrolls-preview.vercel.app"  # switch to the live domain at launch
+SITE = "https://www.webuyrolls.com"
 
 PAGES = {
     "Aluminum Foil": ("aluminum-foil", [
@@ -125,6 +125,8 @@ def main():
         for prop in ("og:description", "twitter:description"):
             page_head = re.sub(r'(<meta (?:property|name)="%s" content=")[^"]*' % prop, r"\g<1>" + html.escape(desc, quote=True), page_head)
         page_head = re.sub(r'(<meta property="og:url" content=")[^"]*', r"\g<1>%s/%s" % (SITE, slug), page_head)
+        page_head = re.sub(r'(<link rel="canonical" href=")[^"]*', r"\g<1>%s/%s" % (SITE, slug), page_head)
+        page_head = re.sub(r'<script type="application/ld\+json">.*?</script>\n?', "", page_head, flags=re.S)
         faq, faq_schema = faq_block(slug, faqs[slug])
         page_head = page_head.replace("</head>", faq_schema + "</head>")
 
@@ -190,6 +192,8 @@ def build_404(head, header, footer):
     Vercel serves it for any unknown URL, possibly at a nested path, so asset links are absolute."""
     page_head = re.sub(r"<title>.*?</title>", "<title>Page not found | We Buy Rolls</title>", head)
     page_head = re.sub(r'<meta name="robots" content="[^"]*">\n?', "", page_head)
+    page_head = re.sub(r'<link rel="canonical"[^>]*>\n?', "", page_head)
+    page_head = re.sub(r'<script type="application/ld\+json">.*?</script>\n?', "", page_head, flags=re.S)
     page_head = page_head.replace("<head>", '<head>\n<meta name="robots" content="noindex">', 1)
     nav = header.replace('href="#contact"', 'href="/#contact"')
     links = "\n".join('          <li><a href="/%s">%s</a></li>' % (slug, title) for title, (slug, _) in PAGES.items())
