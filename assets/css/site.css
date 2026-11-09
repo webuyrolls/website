@@ -358,3 +358,28 @@ ul { margin: 0; padding: 0; list-style: none; }
   .faq__item[open]::details-content { height: auto; }
 }
 @media (max-width: 860px) { .faq__in { grid-template-columns: 1fr; } }
+
+/* HubSpot form (rendered without HubSpot's own CSS) */
+.hs-slot form { display: grid; gap: 18px; }
+.hs-slot fieldset { max-width: none !important; margin: 0; padding: 0; border: 0; min-width: 0; }
+.hs-slot fieldset.form-columns-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.hs-slot fieldset .hs-form-field { width: auto !important; float: none !important; margin: 0; }
+.hs-slot .hs-form-field .input { margin: 0 !important; }
+.hs-slot .hs-form-field > label { display: block; margin-bottom: 8px; font-size: .88rem; color: var(--muted); }
+.hs-slot .hs-form-required { color: var(--blue-lt); margin-left: 2px; }
+.hs-slot input.hs-input:not([type="checkbox"]):not([type="radio"]), .hs-slot textarea.hs-input, .hs-slot select.hs-input { width: 100% !important; box-sizing: border-box; }
+.hs-slot textarea.hs-input { min-height: 140px; resize: vertical; }
+.hs-slot ul { list-style: none; margin: 0; padding: 0; }
+.hs-slot .legal-consent-container, .hs-slot .hs-richtext, .hs-slot .legal-consent-container p { font-size: .82rem; line-height: 1.55; color: #8796ad; margin: 0 0 8px; }
+.hs-slot .legal-consent-container a { color: var(--blue-lt); }
+.hs-slot .hs-form-booleancheckbox-display { display: flex; gap: 10px; align-items: flex-start; margin: 8px 0; color: var(--text); font-size: .9rem; cursor: pointer; }
+.hs-slot input[type="checkbox"] { width: 18px; height: 18px; margin: 2px 0 0; flex: none; accent-color: var(--blue); }
+.hs-slot .hs-error-msgs label, .hs-slot .hs-error-msg { color: #ff9b9b; font-size: .82rem; }
+.hs-slot .hs-input.invalid.error { border-color: #ff9b9b; }
+.hs-slot .hs_submit .actions { margin: 4px 0 0; padding: 0; }
+.hs-slot .hs-button { transition: background .2s, border-color .2s, box-shadow .2s; }
+.hs-slot .hs-button:hover { background: var(--blue-lt); border-color: var(--blue-lt); box-shadow: 0 0 32px rgba(78,131,194,.45); }
+.hs-slot .submitted-message { font-size: 1.1rem; color: var(--text); padding: 12px 0; }
+@media (max-width: 560px) { .hs-slot fieldset.form-columns-2 { grid-template-columns: 1fr; } }
+.form[hidden] { display: none; }
+.hs-slot .hs-form-booleancheckbox-display > span { margin-left: 0 !important; display: block; }

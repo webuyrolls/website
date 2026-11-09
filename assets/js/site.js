@@ -157,10 +157,14 @@
   if (portal && formId) {
     document.getElementById('fallback-form').hidden = true;
     var s = document.createElement('script');
-    s.src = 'https://js.hsforms.net/forms/embed/v2.js';
+    var region = slot.getAttribute('data-region') || 'na1';
+    s.src = 'https://js-' + region + '.hsforms.net/forms/embed/v2.js';
+    s.charset = 'utf-8';
     s.onload = function () {
-      window.hbspt.forms.create({ region: slot.getAttribute('data-region') || 'na1', portalId: portal, formId: formId, target: '#hubspot-form', css: '' });
+      window.hbspt.forms.create({ region: region, portalId: portal, formId: formId, target: '#hubspot-form', css: '' });
     };
+    // if HubSpot can't load, fall back to the plain form so visitors still see a way to reach us
+    s.onerror = function () { document.getElementById('fallback-form').hidden = false; };
     document.body.appendChild(s);
   }
 
