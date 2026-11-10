@@ -45,6 +45,22 @@ PAGES = {
 }
 
 
+# Search and social titles and descriptions (around 150 characters so search results don't cut them off).
+# Each page's sharing card is assets/img/og/<slug>.jpg, built by scripts/build-og-cards.sh.
+META = {
+    "aluminum-foil": ("Sell Surplus Aluminum Foil Rolls | We Buy Rolls",
+        "We buy surplus aluminum foil rolls: bare, lacquered and laminated foil, lid stock, blister and cold form foil. Fast pick-up across North America."),
+    "paper": ("Sell Surplus Paper Rolls | We Buy Rolls",
+        "We buy surplus paper rolls: kraft, tissue, thermal, coated, silicone and metallized paper and board. Fast pick-up across North America."),
+    "nonwoven-fabric": ("Sell Surplus Non-Woven Fabric Rolls | We Buy Rolls",
+        "We buy surplus non-woven fabric rolls: PP, PET and PE spunbond, spunlace and air laid, medical laminates, wipes and filter media. Pick-up across North America."),
+    "plastic-film": ("Sell Surplus Plastic Film Rolls | We Buy Rolls",
+        "We buy surplus plastic film rolls: PP, BOPP, PET, PE, PVC and nylon, laminates, shrink, metallized and holographic film. Pick-up across North America."),
+    "psa-materials": ("Sell Surplus PSA Tape & Label Rolls | We Buy Rolls",
+        "We buy surplus PSA rolls: label stock, BOPP, PE and PET tape, double sided and medical tape, overlaminates and release liner. Pick-up across North America."),
+}
+
+
 # How each material reads mid-sentence, for the FAQ heading
 FAQ_NAMES = {
     "aluminum-foil": "aluminum foil",
@@ -114,16 +130,21 @@ def main():
         photo = re.search(r'<div class="acc__media"[^>]*><img src="([^"]+)"[^>]*width="(\d+)" height="(\d+)"', panel)
         copy = re.search(r'<p class="acc__copy">(.*?)</p>', panel, re.S).group(1)
         chips = re.search(r'<ul class="chips">.*?</ul>', panel, re.S).group(0)
-        desc = html.unescape(re.sub(r"<[^>]+>", "", copy))[:155].rsplit(" ", 1)[0] + "…" if len(copy) > 155 else html.unescape(copy)
+        seo_title, desc = META[slug]
         name = html.unescape(title)
 
+        def set_meta(h, prop, value):
+            return re.sub(r'(<meta (?:property|name)="%s" content=")[^"]*' % prop, lambda m: m.group(1) + html.escape(value, quote=True), h)
+
         page_head = head
-        page_head = re.sub(r"<title>.*?</title>", "<title>%s | We Buy Rolls</title>" % title, page_head)
-        page_head = re.sub(r'(<meta name="description" content=")[^"]*', r"\g<1>" + html.escape(desc, quote=True), page_head)
+        page_head = re.sub(r"<title>.*?</title>", lambda m: "<title>%s</title>" % html.escape(seo_title, quote=False), page_head)
+        for prop in ("description", "og:description", "twitter:description"):
+            page_head = set_meta(page_head, prop, desc)
         for prop in ("og:title", "twitter:title"):
-            page_head = re.sub(r'(<meta (?:property|name)="%s" content=")[^"]*' % prop, r"\g<1>%s | We Buy Rolls" % title, page_head)
-        for prop in ("og:description", "twitter:description"):
-            page_head = re.sub(r'(<meta (?:property|name)="%s" content=")[^"]*' % prop, r"\g<1>" + html.escape(desc, quote=True), page_head)
+            page_head = set_meta(page_head, prop, seo_title)
+        for prop in ("og:image", "twitter:image"):
+            page_head = set_meta(page_head, prop, "%s/assets/img/og/%s.jpg" % (SITE, slug))
+        page_head = set_meta(page_head, "og:image:alt", "We Buy Rolls: we buy surplus %s rolls" % FAQ_NAMES[slug])
         page_head = re.sub(r'(<meta property="og:url" content=")[^"]*', r"\g<1>%s/%s" % (SITE, slug), page_head)
         page_head = re.sub(r'(<link rel="canonical" href=")[^"]*', r"\g<1>%s/%s" % (SITE, slug), page_head)
         page_head = re.sub(r'<script type="application/ld\+json">.*?</script>\n?', "", page_head, flags=re.S)
