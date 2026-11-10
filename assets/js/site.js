@@ -66,13 +66,23 @@
     var idx = sibs.indexOf(el);
     if (idx > 0) el.style.setProperty('--delay', Math.min(idx * 0.08, 0.5) + 's');
   });
+  // The swap block reveals as one group, quickly, as soon as it starts to come into view
+  var swap = document.querySelector('.swap');
+  var swapEls = swap ? [].slice.call(swap.querySelectorAll('.reveal')) : [];
+  swapEls.forEach(function (el, i) { el.style.setProperty('--delay', (i * 0.05).toFixed(2) + 's'); });
   if ('IntersectionObserver' in window && !reduce) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
       });
     }, { rootMargin: '0px 0px -12% 0px' });
-    revealEls.forEach(function (el) { io.observe(el); });
+    revealEls.forEach(function (el) { if (swapEls.indexOf(el) < 0) io.observe(el); });
+    if (swap) {
+      var sio = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) { swapEls.forEach(function (el) { el.classList.add('in'); }); sio.disconnect(); }
+      }, { rootMargin: '0px 0px -10% 0px' });
+      sio.observe(swap);
+    }
   } else {
     revealEls.forEach(function (el) { el.classList.add('in'); });
   }

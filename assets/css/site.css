@@ -237,6 +237,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .swap__col:not(.swap__col--to) li { color: var(--navy); }
 .swap__col--to li { color: #fff; }
 .swap__arrow img { height: clamp(110px, 13vw, 180px); width: auto; rotate: -45deg; filter: brightness(1.35) drop-shadow(0 20px 30px rgba(8,20,42,.5)); }
+.js .swap .reveal { transition-duration: .6s; }
 .js .swap__arrow.reveal { transform: translateX(-60px); }
 .js .swap__arrow.reveal.in { transform: none; }
 @media (max-width: 820px) {
