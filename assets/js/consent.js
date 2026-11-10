@@ -1,8 +1,9 @@
 /* Cookie consent
-   Scripts that set non-essential cookies are written as
-   <script type="text/plain" data-consent="analytics" data-src="..."> and only run once the visitor
-   accepts. The choice is saved in localStorage; "Cookie settings" in the footer reopens the banner.
-   HubSpot's own banner is turned off so visitors only see this one. */
+   HubSpot tracking loads for every visitor; declining (or a Global Privacy Control signal) tells
+   HubSpot not to track and removes its cookies. Any other script that should wait for consent can be
+   written as <script type="text/plain" data-consent="analytics" data-src="..."> and only runs once
+   the visitor accepts. The choice is saved in localStorage; "Cookie settings" in the footer reopens
+   the banner. HubSpot's own banner is turned off so visitors only see this one. */
 (function () {
   var KEY = 'wbr-consent';
   var VERSION = 1; // bump to ask everyone again after the policy changes
@@ -38,7 +39,7 @@
     });
   }
   function disableAnalytics() {
-    // removes HubSpot's tracking cookies if the visitor had accepted before
+    // stops HubSpot tracking this visitor and removes its cookies
     window._hsp.push(['revokeCookieConsent']);
     window._hsq = window._hsq || [];
     window._hsq.push(['doNotTrack']);
@@ -51,10 +52,9 @@
     setTimeout(function () { if (banner) { banner.remove(); banner = null; } }, 400);
   }
   function choose(analytics) {
-    var before = read();
     save(analytics);
     if (analytics) enableAnalytics();
-    else if (before && before.analytics) disableAnalytics();
+    else disableAnalytics();
     close();
   }
 
@@ -69,10 +69,10 @@
     banner.innerHTML =
       '<h2 class="cookie__h" id="cookie-h">Cookies</h2>' +
       '<p class="cookie__p">We use cookies to see how visitors use this site and to follow up on quote requests. ' +
-      'You can accept or decline analytics cookies. <a href="#" data-placeholder class="cookie__link">Cookie Policy</a></p>' +
+      'You can decline analytics cookies at any time. <a href="#" data-placeholder class="cookie__link">Cookie Policy</a></p>' +
       '<div class="cookie__prefs"' + (withSettings ? '' : ' hidden') + '>' +
         '<label class="cookie__opt"><input type="checkbox" checked disabled> <span><b>Essential</b> Needed for the site and the quote form to work.</span></label>' +
-        '<label class="cookie__opt"><input type="checkbox" id="cookie-analytics"' + (cur && cur.analytics ? ' checked' : '') + '> <span><b>Analytics &amp; marketing</b> HubSpot tracking that shows us which pages help.</span></label>' +
+        '<label class="cookie__opt"><input type="checkbox" id="cookie-analytics"' + (cur && !cur.analytics ? '' : ' checked') + '> <span><b>Analytics &amp; marketing</b> HubSpot tracking that shows us which pages help.</span></label>' +
       '</div>' +
       '<div class="cookie__actions">' +
         '<button type="button" class="btn btn--sm" data-c="accept">Accept all</button>' +
@@ -105,6 +105,7 @@
     // A Global Privacy Control signal counts as declining, so no banner is needed
     if (!cur && navigator.globalPrivacyControl) { save(false); cur = read(); }
     if (cur && cur.analytics) enableAnalytics();
+    else if (cur) disableAnalytics();
     if (!cur) open(false);
     document.addEventListener('click', function (e) {
       if (e.target.closest('[data-cookie-settings]')) { e.preventDefault(); open(true); }
