@@ -98,10 +98,19 @@
     counters.forEach(function (c) { c.textContent = '0'; cio.observe(c); });
   }
 
-  /* Scroll-driven: pitch sequence, hero rolls parallax, photo drift (homepage blocks are optional) */
+  /* Pitch: all its lines reveal together once the block scrolls into view */
   var pitch = document.querySelector('.pitch');
   var steps = pitch ? [].slice.call(pitch.querySelectorAll('[data-step]')) : [];
-  var bar = pitch && pitch.querySelector('.pitch__bar');
+  if (pitch && 'IntersectionObserver' in window && !reduce) {
+    var pio = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { steps.forEach(function (s) { s.classList.add('on'); }); pio.disconnect(); }
+    }, { threshold: .35 });
+    pio.observe(pitch);
+  } else {
+    steps.forEach(function (s) { s.classList.add('on'); });
+  }
+
+  /* Scroll-driven: hero rolls parallax, photo drift (homepage blocks are optional) */
   var hero = document.querySelector('.hero');
   var rolls = [].slice.call(document.querySelectorAll('.roll'));
   var bgs = [].slice.call(document.querySelectorAll('.bg img'));
@@ -117,16 +126,7 @@
     var vh = window.innerHeight;
     top.classList.toggle('is-stuck', window.scrollY > 24);
 
-    if (reduce) { steps.forEach(function (s) { s.classList.add('on'); }); return; }
-
-    // pitch: 0..1 progress through the tall section
-    if (pitch) {
-      var r = pitch.getBoundingClientRect();
-      var p = Math.min(Math.max(-r.top / (r.height - vh), 0), 1);
-      bar.style.setProperty('--p', p.toFixed(3));
-      var active = r.top < vh * .35 ? Math.floor(p * 4.6) + 1 : 0;
-      steps.forEach(function (s) { s.classList.toggle('on', +s.getAttribute('data-step') <= active); });
-    }
+    if (reduce) return;
 
     // hero rolls drift at different speeds
     if (hero) {
