@@ -274,6 +274,9 @@ ul { margin: 0; padding: 0; list-style: none; }
 .form ::placeholder { color: #66758b; }
 .form .btn { width: 100%; }
 .form__note { margin: 0; font-size: .85rem; color: #7d8aa0; }
+.form-card__privacy { margin: 20px 0 0; font-size: .85rem; color: #7d8aa0; }
+.form-card__privacy a { color: var(--text); text-decoration: underline; text-decoration-color: var(--blue-lt); text-underline-offset: 3px; }
+.form-card__privacy a:hover { color: var(--blue-lt); }
 .hs-slot:empty { display: none; }
 .hs-slot .hs-form-field { margin-bottom: 18px; }
 .hs-slot label { display: block; margin-bottom: 8px; font-size: .88rem; color: var(--muted); }
