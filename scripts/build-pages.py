@@ -160,6 +160,9 @@ def main():
 <html lang="en">
 {head}
 <body class="page-mat">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRG838CQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <a class="skip" href="#main">Skip to main content</a>
 
 {header}
@@ -223,6 +226,9 @@ def build_404(head, header, footer):
 <html lang="en">
 {head}
 <body class="page-404">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRG838CQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <a class="skip" href="#main">Skip to main content</a>
 
 {header}

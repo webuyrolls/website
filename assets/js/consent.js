@@ -1,6 +1,7 @@
 /* Cookie consent
-   HubSpot tracking loads for every visitor; declining (or a Global Privacy Control signal) tells
-   HubSpot not to track and removes its cookies. Any other script that should wait for consent can be
+   HubSpot tracking and Google Tag Manager load for every visitor; declining (or a Global Privacy
+   Control signal) tells HubSpot not to track and removes its cookies, and sets Google consent mode to
+   denied so Google Analytics stops setting cookies. Any other script that should wait for consent can be
    written as <script type="text/plain" data-consent="analytics" data-src="..."> and only runs once
    the visitor accepts. The choice is saved in localStorage; "Cookie settings" in the footer reopens
    the banner. HubSpot's own banner is turned off so visitors only see this one. */
@@ -9,6 +10,13 @@
   var VERSION = 1; // bump to ask everyone again after the policy changes
   window.disableHubSpotCookieBanner = true;
   window._hsp = window._hsp || [];
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+
+  function googleConsent(analytics) {
+    var v = analytics ? 'granted' : 'denied';
+    return { analytics_storage: v, ad_storage: v, ad_user_data: v, ad_personalization: v };
+  }
 
   function read() {
     try {
@@ -21,6 +29,7 @@
   }
 
   function enableAnalytics() {
+    window.gtag('consent', 'update', googleConsent(true));
     // clear HubSpot's opt-out marker in case the visitor declined earlier
     var host = location.hostname.split('.').slice(-2).join('.');
     ['', '; domain=' + location.hostname, '; domain=.' + host].forEach(function (d) {
@@ -39,11 +48,16 @@
     });
   }
   function disableAnalytics() {
-    // stops HubSpot tracking this visitor and removes its cookies
+    // stops HubSpot tracking this visitor and removes its cookies; Google stops setting cookies
+    window.gtag('consent', 'update', googleConsent(false));
     window._hsp.push(['revokeCookieConsent']);
     window._hsq = window._hsq || [];
     window._hsq.push(['doNotTrack']);
   }
+
+  // Google's default must be set before Tag Manager loads, so it runs straight away rather than in start()
+  var initial = read();
+  window.gtag('consent', 'default', googleConsent(initial ? initial.analytics : !navigator.globalPrivacyControl));
 
   var banner;
   function close() {
