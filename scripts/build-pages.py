@@ -6,12 +6,16 @@ and copies its material panel (heading, copy, tags and photo) exactly.
 Below that it adds the material's photo gallery from assets/img/gallery/
 and its FAQ (with FAQPage structured data) from scripts/faqs.json.
 
+It also builds the policy pages from the Word documents in scripts/policies/, and 404.html.
+
 Edit index.html, then run:  python3 scripts/build-pages.py
 """
 import html
 import json
 import re
+import zipfile
 from pathlib import Path
+from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = "https://www.webuyrolls.com"
@@ -44,6 +48,12 @@ PAGES = {
     ]),
 }
 
+
+# Google Tag Manager's fallback for visitors without JavaScript, right after <body>
+NOSCRIPT = """<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRG838CQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+"""
 
 # Search and social titles and descriptions (around 150 characters so search results don't cut them off).
 # Each page's sharing card is assets/img/og/<slug>.jpg, built by scripts/build-og-cards.sh.
@@ -160,10 +170,7 @@ def main():
 <html lang="en">
 {head}
 <body class="page-mat">
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRG838CQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-<a class="skip" href="#main">Skip to main content</a>
+{noscript}<a class="skip" href="#main">Skip to main content</a>
 
 {header}
 
@@ -199,7 +206,7 @@ def main():
 </body>
 </html>
 """.format(head=page_head, header=header, photo=photo.group(1), pw=photo.group(2), ph=photo.group(3),
-           title=title, copy=copy, chips=chips.replace('<ul class="chips">', '<ul class="chips mat-chips reveal">'),
+           title=title, copy=copy, noscript=NOSCRIPT, chips=chips.replace('<ul class="chips">', '<ul class="chips mat-chips reveal">'),
            name=html.escape(name, quote=True), gallery=gallery, faq=faq, contact=contact, footer=footer)
         (ROOT / (slug + ".html")).write_text(page)
         found += 1
@@ -208,7 +215,123 @@ def main():
     if found != len(PAGES):
         raise SystemExit("expected %d material panels in index.html, found %d" % (len(PAGES), found))
 
+    build_policies(head, header, footer)
     build_404(head, header, footer)
+
+
+# Policy pages: scripts/policies/<slug>.docx -> <slug>.html. Replace a .docx and rerun to update a page.
+POLICIES = {
+    "privacy-policy": "Privacy Policy",
+    "terms-of-use": "Terms of Use",
+    "trademark-usage-policy": "Trademark Usage Policy",
+}
+W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+
+
+def docx_body(path):
+    """Convert a policy .docx to HTML: bold all-caps lines become headings, bulleted paragraphs a list,
+    tables a table, and bold runs <strong>. The first line (the document title) is dropped."""
+    root = ET.fromstring(zipfile.ZipFile(path).read("word/document.xml"))
+
+    def runs_html(p):
+        out, bold_all, text = [], True, ""
+        for r in p.iter(W + "r"):
+            t = "".join((n.text or "") if n.tag == W + "t" else " " if n.tag == W + "tab" else "\n" if n.tag == W + "br" else ""
+                        for n in r)
+            if not t:
+                continue
+            bold = r.find(W + "rPr/" + W + "b") is not None and r.find(W + "rPr/" + W + "b").get(W + "val") not in ("0", "false")
+            if t.strip() and not bold:
+                bold_all = False
+            text += t
+            esc = html.escape(t).replace("\n", "<br>")
+            if bold and out and out[-1][0]:
+                out[-1] = (True, out[-1][1] + esc)
+            else:
+                out.append((bold, esc))
+        body = "".join("<strong>%s</strong>" % h if b and h.strip() else h for b, h in out)
+        body = body.replace("Get in Touch page", '<a href="/#contact">Get in Touch page</a>')
+        return body.strip(), text.strip(), bold_all
+
+    parts, in_list, first = [], False, True
+    for el in root.find(W + "body"):
+        if el.tag == W + "tbl":
+            if in_list:
+                parts.append("</ul>"); in_list = False
+            rows = []
+            for i, tr in enumerate(el.iter(W + "tr")):
+                cell = "th" if i == 0 else "td"  # header cells are styled, so their bold is dropped
+                rows.append("<tr>" + "".join("<%s>%s</%s>" % (cell, " ".join(runs_html(p)[0] if i else html.escape(runs_html(p)[1]) for p in tc.iter(W + "p")).strip(), cell)
+                                             for tc in tr.iter(W + "tc")) + "</tr>")
+            parts.append('<div class="policy__table"><table>\n<thead>%s</thead>\n<tbody>\n%s\n</tbody></table></div>' % (rows[0], "\n".join(rows[1:])))
+            continue
+        if el.tag != W + "p":
+            continue
+        body, text, bold_all = runs_html(el)
+        if not text:
+            continue
+        if first:
+            first = False
+            continue
+        listed = el.find(W + "pPr/" + W + "numPr") is not None
+        if listed and not in_list:
+            parts.append("<ul>"); in_list = True
+        elif not listed and in_list:
+            parts.append("</ul>"); in_list = False
+        if listed:
+            parts.append("<li>%s</li>" % body)
+        elif text.lower().startswith("last updated"):
+            parts.append('<p class="policy__updated">%s</p>' % body)
+        elif bold_all and text == text.upper() and len(text) < 80:
+            slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+            parts.append('<h2 id="%s">%s</h2>' % (slug, html.escape(text.capitalize())))
+        else:
+            parts.append("<p>%s</p>" % body)
+    if in_list:
+        parts.append("</ul>")
+    return "\n".join("        " + x for x in parts)
+
+
+def build_policies(head, header, footer):
+    for slug, title in POLICIES.items():
+        page_head = re.sub(r"<title>.*?</title>", "<title>%s | We Buy Rolls</title>" % title, head)
+        desc = "The We Buy Rolls %s." % title
+        for prop in ("description", "og:description", "twitter:description"):
+            page_head = re.sub(r'(<meta (?:property|name)="%s" content=")[^"]*' % prop, r"\g<1>" + desc, page_head)
+        for prop in ("og:title", "twitter:title"):
+            page_head = re.sub(r'(<meta (?:property|name)="%s" content=")[^"]*' % prop, r"\g<1>%s | We Buy Rolls" % title, page_head)
+        page_head = re.sub(r'(<meta property="og:url" content=")[^"]*', r"\g<1>%s/%s" % (SITE, slug), page_head)
+        page_head = re.sub(r'(<link rel="canonical" href=")[^"]*', r"\g<1>%s/%s" % (SITE, slug), page_head)
+        page_head = re.sub(r'<script type="application/ld\+json">.*?</script>\n?', "", page_head, flags=re.S)
+        nav = header.replace('href="#contact"', 'href="/#contact"')
+        page = """<!DOCTYPE html>
+<!-- Generated by scripts/build-pages.py from scripts/policies/{slug}.docx. Replace the .docx and rerun the script; changes made here are overwritten. -->
+<html lang="en">
+{head}
+<body class="page-policy">
+{noscript}<a class="skip" href="#main">Skip to main content</a>
+
+{header}
+
+<main id="main">
+  <article class="policy">
+    <div class="wrap policy__in">
+      <p class="tag">Legal</p>
+      <h1>{title}</h1>
+{body}
+    </div>
+  </article>
+</main>
+
+{footer}
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>
+""".format(slug=slug, head=page_head, noscript=NOSCRIPT, header=nav, title=title,
+           body=docx_body(ROOT / "scripts" / "policies" / (slug + ".docx")), footer=footer)
+        (ROOT / (slug + ".html")).write_text(page)
+        print("wrote", slug + ".html")
 
 
 def build_404(head, header, footer):
@@ -226,10 +349,7 @@ def build_404(head, header, footer):
 <html lang="en">
 {head}
 <body class="page-404">
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRG838CQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-<a class="skip" href="#main">Skip to main content</a>
+{noscript}<a class="skip" href="#main">Skip to main content</a>
 
 {header}
 
@@ -260,7 +380,7 @@ def build_404(head, header, footer):
 <script src="assets/js/site.js"></script>
 </body>
 </html>
-""".format(head=page_head, header=nav, footer=footer, links=links)
+""".format(head=page_head, noscript=NOSCRIPT, header=nav, footer=footer, links=links)
     page = re.sub(r'(src|href|data-src)="assets/', r'\1="/assets/', page)
     (ROOT / "404.html").write_text(page)
     print("wrote 404.html")

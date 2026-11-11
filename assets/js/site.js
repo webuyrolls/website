@@ -178,10 +178,5 @@
     document.body.appendChild(s);
   }
 
-  /* Policy links are placeholders until their pages exist */
-  [].slice.call(document.querySelectorAll('[data-placeholder]')).forEach(function (a) {
-    a.addEventListener('click', function (e) { e.preventDefault(); });
-  });
-
   document.getElementById('year').textContent = new Date().getFullYear();
 })();

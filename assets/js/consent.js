@@ -1,7 +1,7 @@
 /* Cookie consent
-   HubSpot tracking and Google Tag Manager load for every visitor; declining (or a Global Privacy
-   Control signal) tells HubSpot not to track and removes its cookies, and sets Google consent mode to
-   denied so Google Analytics stops setting cookies. Any other script that should wait for consent can be
+   HubSpot tracking, Google Tag Manager and Microsoft Clarity load for every visitor; declining (or a
+   Global Privacy Control signal) tells HubSpot not to track and removes its cookies, and sets Google
+   consent mode and Clarity consent to denied so they stop setting cookies. Any other script that should wait for consent can be
    written as <script type="text/plain" data-consent="analytics" data-src="..."> and only runs once
    the visitor accepts. The choice is saved in localStorage; "Cookie settings" in the footer reopens
    the banner. HubSpot's own banner is turned off so visitors only see this one. */
@@ -12,6 +12,8 @@
   window._hsp = window._hsp || [];
   window.dataLayer = window.dataLayer || [];
   window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+  // same queue as Clarity's own snippet, so consent calls made before it loads are kept
+  window.clarity = window.clarity || function () { (window.clarity.q = window.clarity.q || []).push(arguments); };
 
   function googleConsent(analytics) {
     var v = analytics ? 'granted' : 'denied';
@@ -28,13 +30,23 @@
     try { localStorage.setItem(KEY, JSON.stringify({ v: VERSION, analytics: analytics, at: new Date().toISOString() })); } catch (e) {}
   }
 
-  function enableAnalytics() {
-    window.gtag('consent', 'update', googleConsent(true));
-    // clear HubSpot's opt-out marker in case the visitor declined earlier
+  function clarityConsent(analytics) {
+    var v = analytics ? 'granted' : 'denied';
+    window.clarity('consentv2', { ad_Storage: v, analytics_Storage: v });
+  }
+
+  function expire(name) {
     var host = location.hostname.split('.').slice(-2).join('.');
     ['', '; domain=' + location.hostname, '; domain=.' + host].forEach(function (d) {
-      document.cookie = '__hs_do_not_track=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + d;
+      document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + d;
     });
+  }
+
+  function enableAnalytics() {
+    window.gtag('consent', 'update', googleConsent(true));
+    clarityConsent(true);
+    // clear HubSpot's opt-out marker in case the visitor declined earlier
+    expire('__hs_do_not_track');
     window._hsp.push(['setHubSpotConsent', { analytics: true, advertisement: true, functionality: true }]);
     [].slice.call(document.querySelectorAll('script[type="text/plain"][data-consent="analytics"]')).forEach(function (old) {
       var s = document.createElement('script');
@@ -50,6 +62,13 @@
   function disableAnalytics() {
     // stops HubSpot tracking this visitor and removes its cookies; Google stops setting cookies
     window.gtag('consent', 'update', googleConsent(false));
+    clarityConsent(false);
+    window.clarity('consent', false); // also erases Clarity's cookies
+    // consent mode stops new Google Analytics cookies but leaves existing ones, so remove them
+    document.cookie.split('; ').forEach(function (c) {
+      var name = c.split('=')[0];
+      if (/^_ga(_|$)/.test(name)) expire(name);
+    });
     window._hsp.push(['revokeCookieConsent']);
     window._hsq = window._hsq || [];
     window._hsq.push(['doNotTrack']);
@@ -83,7 +102,7 @@
     banner.innerHTML =
       '<h2 class="cookie__h" id="cookie-h">Cookies</h2>' +
       '<p class="cookie__p">We use cookies to see how visitors use this site and to follow up on quote requests. ' +
-      'You can decline analytics cookies at any time. <a href="#" data-placeholder class="cookie__link">Cookie Policy</a></p>' +
+      'You can decline analytics cookies at any time. <a href="/privacy-policy#cookies-analytics-and-tracking-technologies" class="cookie__link">Cookie Policy</a></p>' +
       '<div class="cookie__prefs"' + (withSettings ? '' : ' hidden') + '>' +
         '<label class="cookie__opt"><input type="checkbox" checked disabled> <span><b>Essential</b> Needed for the site and the quote form to work.</span></label>' +
         '<label class="cookie__opt"><input type="checkbox" id="cookie-analytics"' + (cur && !cur.analytics ? '' : ' checked') + '> <span><b>Analytics &amp; marketing</b> HubSpot tracking that shows us which pages help.</span></label>' +
@@ -99,7 +118,6 @@
 
     banner.addEventListener('click', function (e) {
       var b = e.target.closest('[data-c]');
-      if (e.target.closest('[data-placeholder]')) e.preventDefault();
       if (!b) return;
       var c = b.getAttribute('data-c');
       if (c === 'accept') choose(true);
