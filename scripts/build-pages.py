@@ -225,6 +225,17 @@ POLICIES = {
     "terms-of-use": "Terms of Use",
     "trademark-usage-policy": "Trademark Usage Policy",
 }
+# Placeholders and links to fill in each policy's text, which the .docx leaves for us to complete
+FILLS = {
+    "privacy-policy": [
+        ("[DATE]", "November 24, 2026"),
+        ("[SITE ADDRESS]", '<a href="/">www.webuyrolls.com</a>'),
+        ("[FILL]", "wbr-consent"),
+        ("Our Terms of Use", 'Our <a href="/terms-of-use">Terms of Use</a>'),
+        ("(https://tools.google.com/dlpage/gaoptout)",
+         '(<a href="https://tools.google.com/dlpage/gaoptout">tools.google.com/dlpage/gaoptout</a>)'),
+    ],
+}
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 
 
@@ -292,6 +303,14 @@ def docx_body(path):
     return "\n".join("        " + x for x in parts)
 
 
+def policy_body(slug):
+    body = docx_body(ROOT / "scripts" / "policies" / (slug + ".docx"))
+    for find, fill in FILLS.get(slug, []):
+        assert find in body, "%s: %r not found" % (slug, find)
+        body = body.replace(find, fill, 1)
+    return body
+
+
 def build_policies(head, header, footer):
     for slug, title in POLICIES.items():
         page_head = re.sub(r"<title>.*?</title>", "<title>%s | We Buy Rolls</title>" % title, head)
@@ -329,7 +348,7 @@ def build_policies(head, header, footer):
 </body>
 </html>
 """.format(slug=slug, head=page_head, noscript=NOSCRIPT, header=nav, title=title,
-           body=docx_body(ROOT / "scripts" / "policies" / (slug + ".docx")), footer=footer)
+           body=policy_body(slug), footer=footer)
         (ROOT / (slug + ".html")).write_text(page)
         print("wrote", slug + ".html")
 
