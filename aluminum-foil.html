@@ -144,18 +144,22 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <h3>Interested in a quote?</h3>
         <!-- HubSpot form: set data-portal-id and data-form-id to switch from the fallback form to the HubSpot embed -->
         <div id="hubspot-form" class="hs-slot" data-region="na3" data-portal-id="343635070" data-form-id="0b410db3-1e3f-44e0-b8d0-66b30603cd50"></div>
-        <form class="form" id="fallback-form" action="#" method="post">
+        <form class="form" id="fallback-form" action="/api/quote" method="post">
           <div class="form__row">
-            <label><span>Name <b aria-hidden="true">*</b></span><input type="text" name="name" autocomplete="name" required></label>
-            <label><span>Company</span><input type="text" name="company" autocomplete="organization"></label>
+            <label><span>First name</span><input type="text" name="firstname" autocomplete="given-name"></label>
+            <label><span>Last name</span><input type="text" name="lastname" autocomplete="family-name"></label>
           </div>
           <div class="form__row">
-            <label><span>Phone</span><input type="tel" name="phone" autocomplete="tel"></label>
             <label><span>E-mail <b aria-hidden="true">*</b></span><input type="email" name="email" autocomplete="email" required></label>
+            <label><span>Phone</span><input type="tel" name="phone" autocomplete="tel"></label>
           </div>
-          <label><span>Message <b aria-hidden="true">*</b></span><textarea name="message" rows="5" placeholder="Material, specs, gross weight on hand, pick-up location" required></textarea></label>
-          <button class="btn" type="submit">Submit</button>
-          <p class="form__note">This form isn't connected yet. Please call <a href="tel:+12035165235">+1 203-516-5235</a> or email <a href="mailto:sales@webuyrolls.com">sales@webuyrolls.com</a>.</p>
+          <label><span>Company name</span><input type="text" name="company" autocomplete="organization"></label>
+          <label><span>Tell us about the rolls you have available</span><textarea name="submission_message" rows="5" placeholder="Material, specs, gross weight on hand, pick-up location"></textarea></label>
+          <label class="form__hp" aria-hidden="true">Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+          <p class="form__consent">By checking the box below, you agree to receive communications from We Buy Rolls, part of the Clean Lifecycle Network. You can unsubscribe anytime.</p>
+          <label class="form__check"><input type="checkbox" name="subscribe" value="1"> <span>I agree to receive communications from We Buy Rolls.</span></label>
+          <button class="btn" type="submit">Get a Quote</button>
+          <p class="form__note" role="status" aria-live="polite" hidden></p>
         </form>
         <p class="form-card__privacy">We'll use your details to respond to your quote request. See our <a href="/privacy-policy">Privacy Policy</a>.</p>
       </div>

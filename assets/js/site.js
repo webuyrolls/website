@@ -178,5 +178,31 @@
     document.body.appendChild(s);
   }
 
+  /* Backup form: sends to /api/quote, which passes the entry on to the same HubSpot form */
+  var backup = document.getElementById('fallback-form');
+  if (backup) backup.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var note = backup.querySelector('.form__note'), btn = backup.querySelector('[type=submit]');
+    var data = {};
+    new FormData(backup).forEach(function (v, k) { data[k] = v; });
+    data.subscribe = !!data.subscribe;
+    data.pageUri = location.href;
+    data.pageName = document.title;
+    btn.disabled = true;
+    note.hidden = true;
+    fetch('/api/quote', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+      .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+      .then(function (r) {
+        if (!r.ok) throw new Error(r.error || '');
+        backup.innerHTML = '<p class="form__done" role="status">Thanks, we\u2019ve got your quote request and will be in touch shortly.</p>';
+      })
+      .catch(function (err) {
+        note.innerHTML = (err.message || 'Sorry, we couldn\u2019t send your request.') +
+          ' Please try again, or call <a href="tel:+12035165235">+1 203-516-5235</a>.';
+        note.hidden = false;
+        btn.disabled = false;
+      });
+  });
+
   document.getElementById('year').textContent = new Date().getFullYear();
 })();
